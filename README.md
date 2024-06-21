@@ -1,38 +1,9 @@
-# Abstract App Module Template
+# USB: Account Module To Interact With Jackal Protocol
 
-The Abstract Module Template is a starting point for developing composable smart-contracts, or "Apps" on the Abstract platform. An App is instantiated for each Account individually and is migratable. Apps are allowed to perform actions on Abstract Accounts and can integrate with other Apps and Adapters installed on the Account. To learn more about Abstract Accounts, please see the [abstract accounts documentation](https://docs.abstract.money/3_framework/3_architecture.html). To read more about apps, please see the [app module documentation](https://docs.abstract.money/3_framework/6_module_types.html).
+The `usb-plugin` is a module app designed for accounts to interact with Jackal Protocol storage providers, in order to power an extremely convenient UX for users & developers to interact with jackal from any cosmwasm chain! 
 
-This template includes examples for both an app and adapter in a workspace.
-
-## Getting Started
-
-### Requirements
-
-[cargo-generate](https://github.com/cargo-generate/cargo-generate)
-
-Learn more about the requirements for developing Abstract apps in the [getting started documentation](https://docs.abstract.money/4_get_started/1_index.html).
-
-### Setup
-
-To get started, the following commands:
-
-```shell
-cargo generate --git https://github.com/AbstractSDK/app-template.git
-```
-
-It will prompt Project Name(will be used for namespace), App Name and Adapter Name.
-
-```shell
-cd usb
-```
-
-to go to your newly created project and finish setup by running the following command:
-
-```shell
-./template-setup.sh
-```
-
-The setup will suggest you to install a few tools that are used in the template. You can skip this step if you already have them installed or if you're not planning on using them.
+## Differene Between Usb-Plugin & Usb-Adapter
+The Usb-Plugin is instantiated for each Account individually and is migratable. Usb-Plugins are allowed to perform actions on Abstract Accounts and can integrate with other Apps and Adapters installed on the Account. To learn more about Abstract Accounts, please see the [abstract accounts documentation](https://docs.abstract.money/3_framework/3_architecture.html). To read more about apps, please see the [app module documentation](https://docs.abstract.money/3_framework/6_module_types.html).
 
 ## Using the Justfile
 
@@ -115,13 +86,3 @@ just publish-schemas my-namespace my-module 0.0.1
 ```
 
 In the example above, `my-namespace` is the namespace, `my-module` is the module's name, and `0.1` is the minor version. If you create a patch for your module (e.g., `0.1.1`), you don't need to run `publish-schemas` again unless the schemas have changed.
-
-## Contributing
-
-We welcome contributions to the Abstract App Module Template! To contribute, fork this repository and submit a pull request with your changes. If you have any questions or issues, please open an issue in the repository and we will be happy to assist you.
-
-## Community
-
-Check out the following places for support, discussions & feedback:
-
-- Join our [Discord server](https://discord.com/invite/uch3Tq3aym)
