@@ -1,6 +1,6 @@
 use crate::{
     contract::{Usb, UsbResult},
-    msg::{ UsbExecuteMsg},
+    msg::UsbExecuteMsg,
     state::{CONFIG, COUNT},
     UsbError,
 };
@@ -15,9 +15,12 @@ use cosmwasm_std::{
 };
 use prost::Message;
 use usb::{
-    JackalMsg,
     helpers::{hash_and_hex, merkle_helper},
-    types::{filetree::MsgPostFile, storage::MsgSignContract},
+    types::{
+        filetree::{MsgAddViewers, MsgDeleteViewers, MsgPostFile, MsgPostKey},
+        storage::{MsgBuyStorage, MsgCancelContract, MsgSignContract, MsgUpgradeStorage},
+    },
+    JackalMsg,
 };
 
 pub fn execute_handler(
@@ -83,6 +86,46 @@ fn send_content(info: MessageInfo, msg: JackalMsg, mut app: Usb) -> UsbResult {
             };
             Ok(file)
         }
+        JackalMsg::AddViewers {
+            viewer_ids,
+            viewer_keys,
+            address,
+            owner,
+        } => {
+            let add_viewers_type = String::from("/canine_chain.filetree.MsgAddViewers");
+            let msg_add_viewers = MsgAddViewers {
+                creator: info.sender.to_string(),
+                viewer_ids,
+                viewer_keys,
+                address,
+                owner,
+            };
+            let encoded_add_viewers = msg_add_viewers.encode_to_vec();
+            let add_viewers = CosmosMsg::Stargate {
+                type_url: add_viewers_type,
+                value: cosmwasm_std::Binary(encoded_add_viewers),
+            };
+            Ok(add_viewers)
+        }
+        JackalMsg::DeleteViewers {
+            viewer_ids,
+            address,
+            owner,
+        } => {
+            let delete_viewers_type = String::from("/canine_chain.filetree.MsgRemoveViewers");
+            let msg_delete_viewers = MsgDeleteViewers {
+                creator: info.sender.to_string(),
+                viewer_ids,
+                address,
+                owner,
+            };
+            let encoded_add_viewers = msg_delete_viewers.encode_to_vec();
+            let delete_viewers = CosmosMsg::Stargate {
+                type_url: delete_viewers_type,
+                value: cosmwasm_std::Binary(encoded_add_viewers),
+            };
+            Ok(delete_viewers)
+        }
         JackalMsg::SignContract { cid } => {
             let sign_contract_type = String::from("/canine_chain.storage.MsgSignContract");
             let msg_sign_contract = MsgSignContract {
@@ -96,7 +139,77 @@ fn send_content(info: MessageInfo, msg: JackalMsg, mut app: Usb) -> UsbResult {
             };
             Ok(sign_contract)
         }
+        JackalMsg::CancelContract { cid } => {
+            let cancel_contract_type = String::from("/canine_chain.storage.MsgCancelContract");
+            let msg_cancel_contract = MsgCancelContract {
+                creator: info.sender.to_string(),
+                cid,
+            };
 
+            let encoded_cancel_contract = msg_cancel_contract.encode_to_vec();
+            let cancel_contract: CosmosMsg<Empty> = CosmosMsg::Stargate {
+                type_url: cancel_contract_type,
+                value: cosmwasm_std::Binary(encoded_cancel_contract),
+            };
+            Ok(cancel_contract)
+        }
+        JackalMsg::BuyStorage {
+            for_address,
+            duration_days,
+            bytes,
+            payment_denom,
+        } => {
+            let buy_storage_type = String::from("/canine_chain.storage.MsgBuyStorage");
+            let msg_buy_storage = MsgBuyStorage {
+                creator: info.sender.to_string(),
+                for_address,
+                duration_days,
+                bytes,
+                payment_denom,
+            };
+            let encoded_buy_storage = msg_buy_storage.encode_to_vec();
+
+            let buy_storage: CosmosMsg<Empty> = CosmosMsg::Stargate {
+                type_url: buy_storage_type,
+                value: cosmwasm_std::Binary(encoded_buy_storage),
+            };
+            Ok(buy_storage)
+        }
+        JackalMsg::UpgradeStorage {
+            for_address,
+            duration_days,
+            bytes,
+            payment_denom,
+        } => {
+            let upgrade_storage_type = String::from("/canine_chain.storage.MsgUpgradeStorage");
+            let msg_upgrade_storage = MsgUpgradeStorage {
+                creator: info.sender.to_string(),
+                for_address,
+                duration_days,
+                bytes,
+                payment_denom,
+            };
+            let encoded_upgrade_storage = msg_upgrade_storage.encode_to_vec();
+            let upgrade_storage: CosmosMsg<Empty> = CosmosMsg::Stargate {
+                type_url: upgrade_storage_type,
+                value: cosmwasm_std::Binary(encoded_upgrade_storage),
+            };
+            Ok(upgrade_storage)
+        }
+        JackalMsg::PostKey { key } => {
+            let post_key_type = String::from("/canine_chain.storage.MsgPostKey");
+            let msg_post_key = MsgPostKey {
+                key,
+                creator: info.sender.to_string(),
+            };
+
+            let encoded_post_key = msg_post_key.encode_to_vec();
+            let post_key = CosmosMsg::Stargate {
+                type_url: post_key_type,
+                value: cosmwasm_std::Binary(encoded_post_key),
+            };
+            Ok(post_key)
+        }
         _ => Err(UsbError::NotImplemented()),
     }
     .map_err(|error| error)?;

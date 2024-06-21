@@ -20,8 +20,8 @@ pub struct MsgBuyStorage {
     #[prost(uint64, tag = "4")]
     pub bytes: u64,
     /// payment_denom
-    #[prost(uint64, tag = "5")]
-    pub payment_denom: u64,
+    #[prost(string, tag = "5")]
+    pub payment_denom: String,
 }
 /// Sign Contract
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -62,6 +62,6 @@ pub struct MsgUpgradeStorage {
     #[prost(uint64, tag = "4")]
     pub bytes: u64,
     /// payment_denom
-    #[prost(uint64, tag = "5")]
-    pub payment_denom: u64,
+    #[prost(string, tag = "5")]
+    pub payment_denom: String,
 }
