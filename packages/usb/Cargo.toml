@@ -1,0 +1,25 @@
+[package]
+name = "usb"
+version.workspace = true
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[features]
+default = []
+
+[dependencies]
+cosmwasm-std = { workspace = true }
+cosmwasm-schema = { workspace = true }
+cw-storage-plus = { workspace = true }
+abstract-app = { version = "0.22"}
+abstract-adapter = { version = "0.22"}
+cw-orch = { workspace = true }
+thiserror = { workspace = true }
+cw-asset = { workspace = true }
+cw-controllers = { workspace = true }
+cw-semver = { workspace = true }
+const_format = { workspace = true }
+sha2 = { workspace = true }
+hex = { workspace = true }
+prost = { workspace = true }
