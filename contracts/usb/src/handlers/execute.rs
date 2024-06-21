@@ -1,6 +1,7 @@
 use crate::{
     contract::{Usb, UsbResult},
     msg::UsbExecuteMsg,
+    replies::JACKAL_MSG_REPLY_ID,
     state::{CONFIG, COUNT},
     UsbError,
 };
@@ -42,6 +43,7 @@ pub fn execute_handler(
 fn send_content(deps: DepsMut, info: MessageInfo, msg: JackalMsg, mut app: Usb) -> UsbResult {
     // api for executing account actions
     let executor = app.executor(deps.as_ref());
+
     // define msgs to send to jackal as account
     let msg = match msg {
         JackalMsg::MakeRoot {
@@ -238,7 +240,14 @@ fn send_content(deps: DepsMut, info: MessageInfo, msg: JackalMsg, mut app: Usb) 
     )?
     .into();
 
-    Ok(app.response("send_content").add_message(send_as_proxy))
+    // execute as account, with reply on success
+    let msg = executor.execute_with_reply_and_data(
+        send_as_proxy,
+        cosmwasm_std::ReplyOn::Success,
+        JACKAL_MSG_REPLY_ID,
+    )?;
+
+    Ok(app.response("send_content").add_submessage(msg))
 }
 
 // pub(crate) fn route_msg(app: Usb, sender: Addr, msg: JackalMsg) -> UsbResult<CosmosMsg> {
