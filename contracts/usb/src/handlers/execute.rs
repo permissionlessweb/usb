@@ -7,7 +7,8 @@ use crate::{
 
 use abstract_app::{
     objects::{chain_name::ChainName, module::ModuleInfo},
-    std::{ibc_client, IBC_CLIENT},
+    sdk::{Execution, IbcInterface},
+    std::{ibc_client, ibc_host::HostAction, manager, proxy, IBC_CLIENT, PROXY},
     traits::AbstractResponse,
 };
 use cosmwasm_std::{
@@ -34,10 +35,13 @@ pub fn execute_handler(
         UsbExecuteMsg::UpdateConfig {} => update_config(deps, info, app),
         UsbExecuteMsg::Increment {} => increment(deps, app),
         UsbExecuteMsg::Reset { count } => reset(deps, info, count, app),
-        UsbExecuteMsg::SendContent { msg } => send_content(info, msg, app),
+        UsbExecuteMsg::SendContent { msg } => send_content(deps, info, msg, app),
     }
 }
-fn send_content(info: MessageInfo, msg: JackalMsg, mut app: Usb) -> UsbResult {
+// content workflow: manager -> usb -> proxy -> ibc-client -> note -> (ibc) -> voice -> proxy -> ibc-host -> jackal
+fn send_content(deps: DepsMut, info: MessageInfo, msg: JackalMsg, mut app: Usb) -> UsbResult {
+    // api for executing account actions
+    let executor = app.executor(deps.as_ref());
     // define msgs to send to jackal as account
     let msg = match msg {
         JackalMsg::MakeRoot {
@@ -214,7 +218,27 @@ fn send_content(info: MessageInfo, msg: JackalMsg, mut app: Usb) -> UsbResult {
     }
     .map_err(|error| error)?;
 
-    Ok(app.response("send_content").add_message(msg))
+    // sends msg to ibc-client for ibc transfer & execution on jackal
+    let send_as_proxy: CosmosMsg = wasm_execute(
+        app.ibc_client(deps.as_ref()).module_address()?,
+        &proxy::ExecuteMsg::IbcAction {
+            msg: ibc_client::ExecuteMsg::RemoteAction {
+                host_chain: ChainName::from_string("juno".to_string())?.to_string(),
+                action: HostAction::Dispatch {
+                    manager_msgs: vec![manager::ExecuteMsg::ExecOnModule {
+                        module_id: PROXY.to_string(),
+                        exec_msg: to_json_binary(&proxy::ExecuteMsg::ModuleAction {
+                            msgs: vec![msg],
+                        })?,
+                    }],
+                },
+            },
+        },
+        info.funds,
+    )?
+    .into();
+
+    Ok(app.response("send_content").add_message(send_as_proxy))
 }
 
 // pub(crate) fn route_msg(app: Usb, sender: Addr, msg: JackalMsg) -> UsbResult<CosmosMsg> {
