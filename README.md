@@ -1,9 +1,18 @@
 # USB: Account Module To Interact With Jackal Protocol
 
-The `usb-plugin` is a module app designed for accounts to interact with Jackal Protocol storage providers, in order to power an extremely convenient UX for users & developers to interact with jackal from any cosmwasm chain! 
+The `usb-plugin` is a module app designed for accounts to interact with Jackal Protocol, in order to power an extremely convenient UX for users & developers who desire to save files with Jackal.
 
-## Differene Between Usb-Plugin & Usb-Adapter
-The Usb-Plugin is instantiated for each Account individually and is migratable. Usb-Plugins are allowed to perform actions on Abstract Accounts and can integrate with other Apps and Adapters installed on the Account. To learn more about Abstract Accounts, please see the [abstract accounts documentation](https://docs.abstract.money/3_framework/3_architecture.html). To read more about apps, please see the [app module documentation](https://docs.abstract.money/3_framework/6_module_types.html).
+## Differnce Between Usb-Plugin & Usb-Adapter
+
+### Usb-Plugin
+The **Usb-Plugin** is instantiated for each Account individually and is migratable. Usb-Plugins is allowed to perform the actions as the Account, and can integrate with other Apps and Adapters installed on the Account. To learn more about Abstract Accounts, please see the [abstract accounts documentation](https://docs.abstract.money/3_framework/3_architecture.html). To read more about apps, please see the [app module documentation](https://docs.abstract.money/3_framework/6_module_types.html).
+
+
+### Usb Adapter
+Unlike The Usb-Plugin, the Usb-Adapter is shared between accounts. 
+
+The **Usb-Adapter** serves as standard interface to extend the compatability with an Account and its storage options. The key function of an **Usb-Adapter** is to generalize functionality. **This currently is unimplemented**, however a goal for the adapter can be to generalize encryption schemes for various file storage methods. 
+
 
 ## Using the Justfile
 
