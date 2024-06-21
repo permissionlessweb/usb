@@ -1,10 +1,8 @@
 use crate::{
     error::UsbError,
     handlers,
-    msg::{
-        UsbExecuteMsg, UsbInstantiateMsg, UsbMigrateMsg, UsbQueryMsg
-    },
-    replies::{self, INSTANTIATE_REPLY_ID},
+    msg::{UsbExecuteMsg, UsbInstantiateMsg, UsbMigrateMsg, UsbQueryMsg},
+    replies::{self, INSTANTIATE_REPLY_ID, JACKAL_MSG_REPLY_ID},
     APP_VERSION, USB_ID,
 };
 
@@ -15,8 +13,7 @@ use cosmwasm_std::Response;
 pub type UsbResult<T = Response> = Result<T, UsbError>;
 
 /// The type of the app that is used to build your app and access the Abstract SDK features.
-pub type Usb =
-    AppContract<UsbError, UsbInstantiateMsg, UsbExecuteMsg, UsbQueryMsg, UsbMigrateMsg>;
+pub type Usb = AppContract<UsbError, UsbInstantiateMsg, UsbExecuteMsg, UsbQueryMsg, UsbMigrateMsg>;
 
 const APP: Usb = Usb::new(USB_ID, APP_VERSION, None)
     .with_instantiate(handlers::instantiate_handler)
@@ -24,7 +21,10 @@ const APP: Usb = Usb::new(USB_ID, APP_VERSION, None)
     .with_query(handlers::query_handler)
     .with_migrate(handlers::migrate_handler)
     .with_dependencies(&[])
-    .with_replies(&[(INSTANTIATE_REPLY_ID, replies::instantiate_reply)]);
+    .with_replies(&[
+        (INSTANTIATE_REPLY_ID, replies::instantiate_reply),
+        (JACKAL_MSG_REPLY_ID, replies::jackal_reply),
+    ]);
 
 // Export handlers
 #[cfg(feature = "export")]

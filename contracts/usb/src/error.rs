@@ -1,3 +1,4 @@
+use abstract_app::objects::version_control::VersionControlError;
 use abstract_app::sdk::AbstractSdkError;
 use abstract_app::std::AbstractError;
 use abstract_app::AppError;
@@ -16,6 +17,8 @@ pub enum UsbError {
 
     #[error("{0}")]
     AbstractSdk(#[from] AbstractSdkError),
+    #[error("{0}")]
+    VersionControlError(#[from] VersionControlError),
 
     #[error("not-implemented")]
     NotImplemented(),

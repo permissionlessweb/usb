@@ -13,7 +13,20 @@ Unlike The Usb-Plugin, the Usb-Adapter is shared between accounts.
 
 The **Usb-Adapter** serves as standard interface to extend the compatability with an Account and its storage options. The key function of an **Usb-Adapter** is to generalize functionality. **This currently is unimplemented**, however a goal for the adapter can be to generalize encryption schemes for various file storage methods. 
 
+### Jackal Data Format Details
 
+* **account -** `Hex[hash(Bech32 address)]`
+* **rootHashPath -** `MerklePath("s")`
+* **contents -** `FID`
+* **editors -** 
+    * c = `concatenate("e", trackingNumber, Bech32 address)`
+    * map_key = `hex[hash("c")]`
+    * map_value = `ECIES.encypt(aesIV + aesKey)`
+* **viewers -**
+    * c = `concatenate( "v", trackingNumber, Bech32 address )`
+    * map_key = `hex[ hash("c") ]`
+    * map_value = `ECIES.encrypt( aesIV + aesKey )`
+* **trackingNumber -** `UUID used in viewers & editors map`
 ## Using the Justfile
 
 This repository comes with a [`justfile`](https://github.com/casey/just), which is a handy task runner that helps with building, testing, and publishing your Abstract app module.
@@ -95,3 +108,9 @@ just publish-schemas my-namespace my-module 0.0.1
 ```
 
 In the example above, `my-namespace` is the namespace, `my-module` is the module's name, and `0.1` is the minor version. If you create a patch for your module (e.g., `0.1.1`), you don't need to run `publish-schemas` again unless the schemas have changed.
+
+
+## Future Goals 
+* Automate Storage Purchasing
+* Manage Storage Provider 
+* SubLease Storage 

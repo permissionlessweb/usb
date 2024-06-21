@@ -18,7 +18,7 @@ pub struct UsbInstantiateMsg {
 #[impl_into(ExecuteMsg)]
 pub enum UsbExecuteMsg {
     SendContent {
-        msg: JackalMsg,
+        msgs: Vec<JackalMsg>,
     },
 
     UpdateConfig {},
