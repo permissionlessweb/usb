@@ -41,13 +41,16 @@ schema = ["abstract-app/schema"]
 
 [dependencies]
 cosmwasm-std = { workspace = true }
+abstract-app = { workspace = true }
+abstract-std = { workspace = true }
+abstract-interface = { workspace = true, features = ["interchain"] }
+abstract-cw-orch-polytone = { workspace = true }
 cosmwasm-schema = { workspace = true }
 cw-controllers = { workspace = true }
 cw-storage-plus = { workspace = true }
 thiserror = { workspace = true }
 schemars = { workspace = true }
 cw-asset = { workspace = true }
-abstract-app = { workspace = true }
 const_format = { workspace = true }
 sha2 = { workspace = true }
 hex = { workspace = true }
@@ -55,8 +58,8 @@ prost = { workspace = true }
 prost-build = { workspace = true }
 # Dependencies for interface
 cw-orch = { workspace = true }
-abstract-interface = { workspace = true }
 usb = { workspace = true }
+polytone = { workspace = true }
 
 # Dependencies for bins
 clap = { workspace = true, optional = true, features = ["derive"] }
@@ -65,6 +68,7 @@ dotenv = { workspace = true, optional = true }
 env_logger = { workspace = true, optional = true }
 
 [dev-dependencies]
+cw-orch-interchain = { workspace = true }
 usb = { workspace = true }
 abstract-client = { workspace = true }
 abstract-app = { workspace = true, features = ["test-utils"] }

@@ -13,11 +13,11 @@ pub fn instantiate_handler(
     _env: Env,
     _info: MessageInfo,
     _app: Usb,
-    msg: UsbInstantiateMsg,
+    _msg: UsbInstantiateMsg,
 ) -> UsbResult {
     let config: Config = Config {};
 
     CONFIG.save(deps.storage, &config)?;
-    COUNT.save(deps.storage, &msg.count)?;
+    COUNT.save(deps.storage, &0)?;
     Ok(Response::new())
 }

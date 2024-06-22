@@ -114,3 +114,4 @@ In the example above, `my-namespace` is the namespace, `my-module` is the module
 * Automate Storage Purchasing
 * Manage Storage Provider 
 * SubLease Storage 
+* Send msgs locally if account is already on Jackal

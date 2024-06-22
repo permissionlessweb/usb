@@ -8,27 +8,18 @@ abstract_app::app_msg_types!(Usb, UsbExecuteMsg, UsbQueryMsg);
 
 /// App instantiate message
 #[cosmwasm_schema::cw_serde]
-pub struct UsbInstantiateMsg {
-    pub count: i32,
-}
+pub struct UsbInstantiateMsg {}
 
 /// App execute messages
 #[cosmwasm_schema::cw_serde]
 #[derive(cw_orch::ExecuteFns)]
 #[impl_into(ExecuteMsg)]
 pub enum UsbExecuteMsg {
-    SendContent {
+    JackalMsgs {
         msgs: Vec<JackalMsg>,
     },
 
     UpdateConfig {},
-    /// Increment count by 1
-    Increment {},
-    /// Admin method - reset count
-    Reset {
-        /// Count value after reset
-        count: i32,
-    },
 }
 
 #[cosmwasm_schema::cw_serde]

@@ -34,9 +34,7 @@ pub fn execute_handler(
 ) -> UsbResult {
     match msg {
         UsbExecuteMsg::UpdateConfig {} => update_config(deps, info, app),
-        UsbExecuteMsg::Increment {} => increment(deps, app),
-        UsbExecuteMsg::Reset { count } => reset(deps, info, count, app),
-        UsbExecuteMsg::SendContent { msgs } => send_content(deps, info, msgs, app),
+        UsbExecuteMsg::JackalMsgs { msgs } => send_content(deps, info, msgs, app),
     }
 }
 // content workflow: manager -> usb -> proxy -> ibc-client -> note -> (ibc) -> voice -> proxy -> ibc-host -> jackal
@@ -240,17 +238,15 @@ fn send_content(deps: DepsMut, info: MessageInfo, msgs: Vec<JackalMsg>, mut app:
     // sends msg to ibc-client for ibc transfer & execution on jackal
     let send_as_proxy: CosmosMsg = wasm_execute(
         app.ibc_client(deps.as_ref()).module_address()?,
-        &proxy::ExecuteMsg::IbcAction {
-            msg: ibc_client::ExecuteMsg::RemoteAction {
-                host_chain: ChainName::from_string("juno".to_string())?.to_string(),
-                action: HostAction::Dispatch {
-                    manager_msgs: vec![manager::ExecuteMsg::ExecOnModule {
-                        module_id: PROXY.to_string(),
-                        exec_msg: to_json_binary(&proxy::ExecuteMsg::ModuleAction {
-                            msgs: jackal_msgs,
-                        })?,
-                    }],
-                },
+        &ibc_client::ExecuteMsg::RemoteAction {
+            host_chain: ChainName::from_string("juno".to_string())?.to_string(),
+            action: HostAction::Dispatch {
+                manager_msgs: vec![manager::ExecuteMsg::ExecOnModule {
+                    module_id: PROXY.to_string(),
+                    exec_msg: to_json_binary(&proxy::ExecuteMsg::ModuleAction {
+                        msgs: jackal_msgs,
+                    })?,
+                }],
             },
         },
         info.funds,
