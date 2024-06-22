@@ -1,6 +1,6 @@
 # USB: Account Module To Interact With Jackal Protocol
 
-The `usb-plugin` is a module app designed for accounts to interact with Jackal Protocol, in order to power an extremely convenient UX for users & developers who desire to save files with Jackal.
+The `usb-plugin` is a module app designed for an extremely convenient UX for users & developers who desire to save files with an [Abstract Account](https://docs.abstract.money/3_framework/2_account_abstraction.html), via storage providers on [Jackal](https://docs.jackalprotocol.com/docs/intro).
 
 ## Differnce Between Usb-Plugin & Usb-Adapter
 
@@ -13,8 +13,27 @@ Unlike The Usb-Plugin, the Usb-Adapter is shared between accounts.
 
 The **Usb-Adapter** serves as standard interface to extend the compatability with an Account and its storage options. The key function of an **Usb-Adapter** is to generalize functionality. **This currently is unimplemented**, however a goal for the adapter can be to generalize encryption schemes for various file storage methods. 
 
-### Jackal Data Format Details
+## Encyption: Jackal
+ Jackal makes use of two primary encryption models:
+1. **File Encryption -** secures the files themselves
+2. **File Entry Encryption -** secures the file entries on the blockchain.
 
+### Definitions: 
+- **Advanced Encryption Standard (AES-256):** provides secure data encryption using a 256-bit key size.
+- **aesIV:** A random or pseudorandom value that is used to initialize the encryption process, providing a unique starting point for each encryption operation.
+
+### Encrpytion of a File
+1. **randomly generate symmetric key via AES-256:** *used for File Encryption.*
+2. **save symmetric key to [x/filetree](https://github.com/JackalLabs/canine-chain/tree/master/x/filetree):** 
+    - *used for Entry Encryption. Encrypted via private key signature, and saved to the x/filetree module. The symmetric key's secure storage is equally crucial, as exposing it would compromise the file's encryption.*
+
+### Decryption of a File
+1. **get encrypted file**
+2. **get encrypted symmetric key**
+3. **decrypt symmetric key**
+4. **decrypt file with symmetric key**
+
+### Data Format Details
 * **account -** `Hex[hash(Bech32 address)]`
 * **rootHashPath -** `MerklePath("s")`
 * **contents -** `FID`
@@ -23,10 +42,11 @@ The **Usb-Adapter** serves as standard interface to extend the compatability wit
     * map_key = `hex[hash("c")]`
     * map_value = `ECIES.encypt(aesIV + aesKey)`
 * **viewers -**
-    * c = `concatenate( "v", trackingNumber, Bech32 address )`
+    * c = `concatenate("v", trackingNumber, Bech32 address)`
     * map_key = `hex[ hash("c") ]`
     * map_value = `ECIES.encrypt( aesIV + aesKey )`
 * **trackingNumber -** `UUID used in viewers & editors map`
+
 ## Using the Justfile
 
 This repository comes with a [`justfile`](https://github.com/casey/just), which is a handy task runner that helps with building, testing, and publishing your Abstract app module.
