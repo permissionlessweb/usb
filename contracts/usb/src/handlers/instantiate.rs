@@ -1,7 +1,5 @@
 use crate::{
-    contract::{
-        Usb, UsbResult
-    },
+    contract::{Usb, UsbResult},
     msg::UsbInstantiateMsg,
     state::{Config, CONFIG, COUNT},
 };

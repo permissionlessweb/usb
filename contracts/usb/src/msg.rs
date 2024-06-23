@@ -18,7 +18,6 @@ pub enum UsbExecuteMsg {
     JackalMsgs {
         msgs: Vec<JackalMsg>,
     },
-
     UpdateConfig {},
 }
 

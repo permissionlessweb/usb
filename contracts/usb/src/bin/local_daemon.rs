@@ -12,7 +12,7 @@ use usb::USB_ID;
 use abstract_app::objects::namespace::Namespace;
 use abstract_client::{AbstractClient, Publisher};
 use cw_orch::{anyhow, prelude::*, tokio::runtime::Runtime};
-use usb::{msg::UsbInstantiateMsg, UsbInterface};
+use usb_plugin::{msg::UsbInstantiateMsg, UsbInterface};
 
 const LOCAL_MNEMONIC: &str = "clip hire initial neck maid actor venue client foam budget lock catalog sweet steak waste crater broccoli pipe steak sister coyote moment obvious choose";
 
@@ -52,18 +52,12 @@ fn main() -> anyhow::Result<()> {
 
     let account = abstract_client.account_builder().build()?;
     // Installs the app on the Account
-    let app = account.install_app::<UsbInterface<_>>(&UsbInstantiateMsg { count: 0 }, &[])?;
+    let app = account.install_app::<UsbInterface<_>>(&UsbInstantiateMsg {}, &[])?;
 
     // Import app's endpoint function traits for easy interactions.
     use usb::msg::{
         UsbExecuteMsgFns, UsbQueryMsgFns
-    };
-    assert_eq!(app.count()?.count, 0);
-    // Execute the App
-    app.increment()?;
-
-    // Query the App again
-    assert_eq!(app.count()?.count, 1);
+    }; 
 
     // Note: the App is installed on a sub-account of the main account!
     assert_ne!(account.id()?, app.account().id()?);

@@ -2,16 +2,17 @@ use crate::{
     contract::{Usb, UsbResult},
     msg::UsbExecuteMsg,
     replies::JACKAL_MSG_REPLY_ID,
-    state::{CONFIG, COUNT},
+    state::{COUNT, IBC_CLIENT_ADDR},
     UsbError,
 };
 
 use abstract_app::{
-    objects::{chain_name::ChainName, module::ModuleInfo, version_control::VersionControlError},
-    sdk::{Execution, IbcInterface},
+    objects::chain_name::ChainName,
+    sdk::{query_ownership, Execution, IbcInterface},
     std::{ibc_client, ibc_host::HostAction, manager, proxy, IBC_CLIENT, PROXY},
     traits::AbstractResponse,
 };
+use abstract_std::JUNO;
 use cosmwasm_std::{
     to_json_binary, wasm_execute, Addr, CosmosMsg, DepsMut, Empty, Env, MessageInfo,
 };
@@ -32,6 +33,8 @@ pub fn execute_handler(
     app: Usb,
     msg: UsbExecuteMsg,
 ) -> UsbResult {
+    // only admin can run this
+    // app.admin.assert_admin(deps.as_ref(), &info.sender)?;
     match msg {
         UsbExecuteMsg::UpdateConfig {} => update_config(deps, info, app),
         UsbExecuteMsg::JackalMsgs { msgs } => send_content(deps, info, msgs, app),
@@ -39,21 +42,9 @@ pub fn execute_handler(
 }
 // content workflow: manager -> usb -> proxy -> ibc-client -> note -> (ibc) -> voice -> proxy -> ibc-host -> jackal
 fn send_content(deps: DepsMut, info: MessageInfo, msgs: Vec<JackalMsg>, mut app: Usb) -> UsbResult {
-    // api for executing account actions
     let mut jackal_msgs = vec![];
+    // api for executing account actions as module
     let executor = app.executor(deps.as_ref());
-
-    // let acc_id = app
-    //     .load_state(deps.storage)?
-    //     .version_control
-    //     .account_id(&info.sender, &deps.querier)
-    //     .expect("This msg was not sent by the proxy");
-
-    // // manager & proxy addrs
-    // let acc_base = app
-    //     .load_state(deps.storage)?
-    //     .version_control
-    //     .account_base(&acc_id, &deps.querier)?;
 
     for msg in msgs {
         // define msgs to send to jackal as account
@@ -239,7 +230,7 @@ fn send_content(deps: DepsMut, info: MessageInfo, msgs: Vec<JackalMsg>, mut app:
     let send_as_proxy: CosmosMsg = wasm_execute(
         app.ibc_client(deps.as_ref()).module_address()?,
         &ibc_client::ExecuteMsg::RemoteAction {
-            host_chain: ChainName::from_string("juno".to_string())?.to_string(),
+            host_chain: ChainName::from_string(JUNO[0].to_string())?.to_string(),
             action: HostAction::Dispatch {
                 manager_msgs: vec![manager::ExecuteMsg::ExecOnModule {
                     module_id: PROXY.to_string(),
@@ -287,20 +278,6 @@ fn send_content(deps: DepsMut, info: MessageInfo, msgs: Vec<JackalMsg>, mut app:
 fn update_config(deps: DepsMut, msg_info: MessageInfo, app: Usb) -> UsbResult {
     // Only the admin should be able to call this
     app.admin.assert_admin(deps.as_ref(), &msg_info.sender)?;
-    let mut _config = CONFIG.load(deps.storage)?;
 
     Ok(app.response("update_config"))
-}
-
-fn increment(deps: DepsMut, app: Usb) -> UsbResult {
-    COUNT.update(deps.storage, |count| UsbResult::Ok(count + 1))?;
-
-    Ok(app.response("increment"))
-}
-
-fn reset(deps: DepsMut, info: MessageInfo, count: i32, app: Usb) -> UsbResult {
-    app.admin.assert_admin(deps.as_ref(), &info.sender)?;
-    COUNT.save(deps.storage, &count)?;
-
-    Ok(app.response("reset"))
 }
