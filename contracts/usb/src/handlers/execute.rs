@@ -2,7 +2,7 @@ use crate::{
     contract::{Usb, UsbResult},
     msg::UsbExecuteMsg,
     replies::JACKAL_MSG_REPLY_ID,
-    state::{COUNT, IBC_CLIENT_ADDR},
+    state::COUNT,
     UsbError,
 };
 
