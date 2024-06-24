@@ -107,20 +107,50 @@ mod basic_functions {
         jkl_env.enable_ibc()?;
 
         // d. Connect Chains To Each Other
-        ibc_connect_polytone_and_abstract(&interchain, "juno-1", "jackal-1")?;
+        let ibc_client = ibc_connect_polytone_and_abstract(&interchain, "juno-1", "jackal-1")?;
 
         let bs_client = bs_env.client1;
         let jkl_client = jkl_env.client1;
-
-        bs_client.account().set_ibc_status(true)?;
 
         let msg = JackalMsg::MakeRoot {
             editors: "test".to_string(),
             viewers: "test".to_string(),
             tracking_number: "test".to_string(),
         };
+        let msg2 = JackalMsg::PostKey {
+            key: "test".to_string(),
+        };
+        let msg3 = JackalMsg::AddViewers {
+            viewer_ids: "test".to_string(),
+            viewer_keys: "test".to_string(),
+            address: "test".to_string(),
+            owner: "test".to_string(),
+        };
+        let msg4 = JackalMsg::BuyStorage {
+            for_address: "test".to_string(),
+            duration_days: 30,
+            bytes: 0,
+            payment_denom: "uterp".to_string(),
+        };
+        let msg5 = JackalMsg::CancelContract {
+            cid: "test".to_string(),
+        };
+        let msg6 = JackalMsg::SignContract {
+            cid: "test".to_string(),
+        };
+        let msg7 = JackalMsg::UpgradeStorage {
+            for_address: "test".to_string(),
+            duration_days: 30,
+            bytes: 0,
+            payment_denom: "ubtsg".to_string(),
+        };
+        let msg9 = JackalMsg::DeleteViewers {
+            viewer_ids: "test".to_string(),
+            address: "test".to_string(),
+            owner: "test".to_string(),
+        };
 
-        bs_client.jackal_msgs(vec![msg])?;
+        bs_client.jackal_msgs(vec![msg, msg2, msg3, msg4, msg5, msg6, msg7,msg9])?;
 
         Ok(())
     }
@@ -148,7 +178,8 @@ pub fn ibc_connect_polytone_and_abstract<Chain: IbcQueryHandler, IBC: Interchain
         None, // Unordered channel
     )?;
     // Create the connection between client and host
-    abstract_ibc_connection_with(&abstr_origin, interchain, &abstr_remote, &origin_polytone)?;
+    let addr =
+        abstract_ibc_connection_with(&abstr_origin, interchain, &abstr_remote, &origin_polytone)?;
 
     Ok(())
 }

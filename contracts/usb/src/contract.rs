@@ -6,7 +6,7 @@ use crate::{
     APP_VERSION, USB_ID,
 };
 
-use abstract_app::AppContract;
+use abstract_app::AppContract;       
 use cosmwasm_std::Response;
 
 /// The type of the result returned by your app's entry points.

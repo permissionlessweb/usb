@@ -1,6 +1,7 @@
 use crate::contract::Usb;
 
 use cosmwasm_schema::QueryResponses;
+use cosmwasm_std::Addr;
 use usb::JackalMsg;
 
 // This is used for type safety and re-exporting the contract endpoint structs.
@@ -15,10 +16,7 @@ pub struct UsbInstantiateMsg {}
 #[derive(cw_orch::ExecuteFns)]
 #[impl_into(ExecuteMsg)]
 pub enum UsbExecuteMsg {
-    JackalMsgs {
-        msgs: Vec<JackalMsg>,
-    },
-    UpdateConfig {},
+    JackalMsgs { msgs: Vec<JackalMsg> },
 }
 
 #[cosmwasm_schema::cw_serde]

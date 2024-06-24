@@ -36,7 +36,6 @@ pub fn execute_handler(
     // only admin can run this
     // app.admin.assert_admin(deps.as_ref(), &info.sender)?;
     match msg {
-        UsbExecuteMsg::UpdateConfig {} => update_config(deps, info, app),
         UsbExecuteMsg::JackalMsgs { msgs } => send_content(deps, info, msgs, app),
     }
 }
@@ -230,7 +229,7 @@ fn send_content(deps: DepsMut, info: MessageInfo, msgs: Vec<JackalMsg>, mut app:
     let send_as_proxy: CosmosMsg = wasm_execute(
         app.ibc_client(deps.as_ref()).module_address()?,
         &ibc_client::ExecuteMsg::RemoteAction {
-            host_chain: ChainName::from_string(JUNO[0].to_string())?.to_string(),
+            host_chain: ChainName::from_string("jackal".to_string())?.to_string(),
             action: HostAction::Dispatch {
                 manager_msgs: vec![manager::ExecuteMsg::ExecOnModule {
                     module_id: PROXY.to_string(),
@@ -252,32 +251,4 @@ fn send_content(deps: DepsMut, info: MessageInfo, msgs: Vec<JackalMsg>, mut app:
     )?;
 
     Ok(app.response("send_content").add_submessage(msg))
-}
-
-// pub(crate) fn route_msg(app: Usb, sender: Addr, msg: JackalMsg) -> UsbResult<CosmosMsg> {
-
-//     // let current_module_info = ModuleInfo::from_id(app.module_id(), app.version().into())?;
-//     // // Call IBC client
-//     // let ibc_client_msg = ibc_client::ExecuteMsg::ModuleIbcAction {
-//     //     host_chain: ChainName::from_string("jackal".to_string())?.to_string(),
-//     //     target_module: current_module_info,
-//     //     msg: to_json_binary(&ServerIbcMessage::RouteMessage { msg, header })?,
-//     //     callback_info: None,
-//     // };
-
-//     // let ibc_client_addr: Addr = app
-//     //     .module_registry(deps.as_ref())?
-//     //     .query_module(ModuleInfo::from_id_latest(IBC_CLIENT)?)?
-//     //     .reference
-//     //     .unwrap_native()?;
-
-//     // let msg: CosmosMsg = wasm_execute(ibc_client_addr, &ibc_client_msg, vec![])?.into();
-// }
-
-/// Update the configuration of the app
-fn update_config(deps: DepsMut, msg_info: MessageInfo, app: Usb) -> UsbResult {
-    // Only the admin should be able to call this
-    app.admin.assert_admin(deps.as_ref(), &msg_info.sender)?;
-
-    Ok(app.response("update_config"))
 }
