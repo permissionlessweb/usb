@@ -36,7 +36,7 @@ abstract-cw-orch-polytone = "2.0.0"
 polytone = { package = "abstract-polytone", version = "1.0.5" }
 polytone-note = { package = "abstract-polytone-note", version = "2.0.0" }
 cw-semver = { version = "1.0" }
-cw-controllers = { version = "1.1.2" }
+cw-controllers = { version = "2.0.0" }
 cw-storage-plus = "1.2.0"
 thiserror = { version = "1.0.50" }
 schemars = "0.8"
