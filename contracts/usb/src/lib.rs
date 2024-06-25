@@ -12,6 +12,6 @@ pub const APP_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 pub use contract::interface::UsbInterface;
 
-pub const USB_NAMESPACE: &str = "usb";
-pub const JBUSB_NAME: &str = "usb";
-pub const USB_ID: &str = const_format::concatcp!(USB_NAMESPACE, ":", JBUSB_NAME);
+pub const USB_NAMESPACE: &str = "bitsong";
+pub const USB_NAME: &str = "usb-plugin";
+pub const USB_ID: &str = const_format::concatcp!(USB_NAMESPACE, ":", USB_NAME);

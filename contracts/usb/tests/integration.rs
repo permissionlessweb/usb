@@ -83,9 +83,8 @@ impl<Env: CwEnv> TestEnv<Env> {
 }
 
 mod basic_functions {
-    use usb::JackalMsg;
-
     use super::*;
+    use usb::JackalMsg;
 
     // Jackal storage encryption workflow
     // 1. generate random key offline
@@ -150,7 +149,8 @@ mod basic_functions {
             owner: "test".to_string(),
         };
 
-        bs_client.jackal_msgs(vec![msg, msg2, msg3, msg4, msg5, msg6, msg7,msg9])?;
+        let res = bs_client.jackal_msgs(vec![msg, msg2, msg3, msg4, msg5, msg6, msg7, msg9]);
+        assert!(res.is_ok());
 
         Ok(())
     }
